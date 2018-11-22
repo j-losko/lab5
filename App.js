@@ -10,6 +10,7 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, ScrollView} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {Button} from 'react-native';
+import FirstScreen from './screens/FirstScreen.js';
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -32,6 +33,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
+      <FirstScreen pagekey={"uniquekey"}/>
         <ScrollView>
           <View style={styles.view}>
             <Button title='1 Ekran testu' onPress={() => this.goToScreen('Test')} />

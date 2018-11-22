@@ -7,19 +7,22 @@ type Props = {};
 export default class Drawer extends Component<Props> {
 
   goToScreen = (screenName) => {
-    Navigation.push(this.props.componentId, {
-      component: {
-        name: screenName,
-        options: {
-          topBar: {
-            title: {
-              text: screenName
-            }
-          }
+    Navigation.mergeOptions('drawerID', {
+      sideMenu: {
+        left: {
+          visible: false
         }
+        }
+      }
+    )
+    Navigation.push('MAIN_STACK', {
+      component: {
+        name: screenName
       }
     })
   }
+
+
 
   render() {
     return (

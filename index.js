@@ -31,13 +31,13 @@ Navigation.events().registerAppLaunchedListener(() => {
       }
     }
   });
- 
+
   Navigation.setRoot({
     root: {
       sideMenu: {
         left: {
           component: {
-            id: 'drawerId',
+            id: 'drawerID',
             name: 'Drawer',
             fixedWidth: width
           }
