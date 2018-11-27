@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, ScrollView} from 'react-native';
+import {Platform, StyleSheet, Text, View, ScrollView, StatusBar} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {Button} from 'react-native';
 import FirstScreen from './screens/FirstScreen.js';
@@ -33,7 +33,11 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-      <FirstScreen pagekey={"uniquekey"}/>
+      <StatusBar
+          barStyle="light-content"
+          backgroundColor="#4F6D7A"
+      />
+      <FirstScreen />
         <ScrollView>
           <View style={styles.view}>
             <Button title='1 Ekran testu' onPress={() => this.goToScreen('Test')} />
@@ -71,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   footer: {
-	backgroundColor: '#DFDFDF',
+    backgroundColor: '#DFDFDF',
     padding: 10
   },
   view: {

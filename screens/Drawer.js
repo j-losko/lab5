@@ -12,9 +12,8 @@ export default class Drawer extends Component<Props> {
         left: {
           visible: false
         }
-        }
       }
-    )
+    })
     Navigation.push('MAIN_STACK', {
       component: {
         name: screenName
