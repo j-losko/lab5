@@ -21,8 +21,6 @@ export default class Drawer extends Component<Props> {
     })
   }
 
-
-
   render() {
     return (
       <View style={styles.container}>

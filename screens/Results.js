@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, ListView, RefreshControl} from 'react-native';
+import {AsyncStorage, Platform, StyleSheet, Text, View, ListView, RefreshControl} from 'react-native';
 
 type Props = {};
 export default class Results extends Component<Props> {
@@ -46,7 +46,12 @@ export default class Results extends Component<Props> {
   }
   
   fetchData = async() => {
-      //todo
+    try {
+      var results = await AsyncStorage.getItem('results');
+      results = JSON.parse(results);
+      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      this.setState({ dataSource: ds.cloneWithRows(results) });
+    } catch (error) {}
   }
 
   render() {
