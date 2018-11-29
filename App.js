@@ -15,6 +15,11 @@ import FirstScreen from './screens/FirstScreen.js';
 type Props = {};
 export default class App extends Component<Props> {
 
+  //TODO:
+  //Button -> TouchableOpacity
+  //Lepszy wygląd?
+  //Jedna ikona xd
+
   goToScreen = (screenName) => {
     Navigation.push(this.props.componentId, {
       component: {

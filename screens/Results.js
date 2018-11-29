@@ -3,7 +3,7 @@ import {AsyncStorage, Platform, StyleSheet, Text, View, ListView, RefreshControl
 
 type Props = {};
 export default class Results extends Component<Props> {
-  
+
   results = [
     {
       nick: 'Marek',
@@ -30,7 +30,7 @@ export default class Results extends Component<Props> {
 
   constructor(props) {
     super(props);
-    
+
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       refreshing: false,
@@ -44,7 +44,7 @@ export default class Results extends Component<Props> {
       this.setState({refreshing: false});
     });
   }
-  
+
   fetchData = async() => {
     try {
       var results = await AsyncStorage.getItem('results');
