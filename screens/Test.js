@@ -1,14 +1,33 @@
 import React, {Component} from 'react';
 import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
+import SQLite from 'react-native-sqlite-storage';
+let DB;
+const getDB = () => DB ? DB : DB = SQLite.openDatabase({ name: 'sqlitedb.db', createFromLocation: 1 });
+
 type Props = {};
 export default class Test extends Component<Props> {
   constructor(props) {
     super(props);
+	getDB();
     this.state = {
       answersPressed: [ /* 'a1','a1','a3','a2',... */ ],
-      tests: this.tests
+      tests: []
     };
+	
+	this.getAllTests(DB);
+  }
+
+  getAllTests = (DB) => {
+	DB.transaction((tx) => {
+      tx.executeSql('SELECT * FROM tests;', [], (tx, results) => {
+		var tests = [];
+		for(let i = 0; i < results.rows.length; i++) {
+		  tests[i] = results.rows.item(i);
+		}
+		this.setState({ tests: tests });
+      });
+	});
   }
 
   testResult = {
@@ -19,7 +38,7 @@ export default class Test extends Component<Props> {
       date: Date()
     }
 
-  tests = [
+  /*tests = [
     {
       id: 1,
       q: 'Naciśnij A',
@@ -47,7 +66,7 @@ export default class Test extends Component<Props> {
       a4: 'Chyba',
       good_answer: 'a1'
     }
-  ]
+  ]*/
   
   checkResults = () => {
     if(this.state.answersPressed.length != this.state.tests.length) {
