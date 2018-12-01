@@ -16,7 +16,7 @@ export default class FirstScreen extends Component {
       if (value == null) {
         this.setModalVisible(true);
       }
-	  await AsyncStorage.setItem('termsOfUseAccepted', JSON.stringify({"value":"true"}));
+      await AsyncStorage.setItem('termsOfUseAccepted', JSON.stringify({"value":"true"}));
     } catch (error) {}
   }
 

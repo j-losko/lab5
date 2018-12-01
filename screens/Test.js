@@ -1,8 +1,15 @@
 import React, {Component} from 'react';
-import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, Button} from 'react-native';
+import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 type Props = {};
 export default class Test extends Component<Props> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      answersPressed: [ /* 'a1','a1','a3','a2',... */ ],
+      tests: this.tests
+    };
+  }
 
   testResult = {
       nick: 'John Async',
@@ -41,6 +48,28 @@ export default class Test extends Component<Props> {
       good_answer: 'a1'
     }
   ]
+  
+  checkResults = () => {
+    if(this.state.answersPressed.length != this.state.tests.length) {
+        alert('Odpowiedz na wszystkie pytania!');
+        return;
+    }
+
+    for(let i = 0; i < this.state.answersPressed.length; i++) {
+      if(this.state.answersPressed[i] === undefined) {
+        alert('Odpowiedz na wszystkie pytania!');
+        return;
+      }
+    }
+    
+    let goodAnswers = 0
+    for(let i = 0; i < this.state.tests.length; i++) {
+      if( this.state.answersPressed[i] === this.state.tests[i].good_answer ) {
+        goodAnswers += 1;
+      }
+    }
+    alert(goodAnswers + '/' + this.state.tests.length);
+  }
 
   saveTestResults = async () => {
     try {
@@ -54,23 +83,36 @@ export default class Test extends Component<Props> {
       await AsyncStorage.setItem('results', JSON.stringify(results));
     } catch (error) {}
   }
+  
+  buttonPress = (id, answer) => {
+    var tempAnswers = this.state.answersPressed;
+    tempAnswers[id] = answer;
+    this.setState({ answersPressed: tempAnswers });
+  }
 
   render() {
-    tests = this.tests
     rows = []
 
-    for(let i = 0; i < tests.length; i++) {
+    for(let i = 0; i < this.state.tests.length; i++) {
       rows.push(
         <View style={styles.testView}>
           <View style={styles.testHeader}>
             <Text>Test {i+1}:</Text>
-            <Text>{tests[i].q}</Text>
+            <Text>{this.state.tests[i].q}</Text>
           </View>
           <View style={styles.testBody}>
-            <Button title={tests[i].a1}/>
-            <Button title={tests[i].a2}/>
-            <Button title={tests[i].a3}/>
-            <Button title={tests[i].a4}/>
+            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a1')}>
+              <Text>{this.state.tests[i].a1}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a2')}>
+              <Text>{this.state.tests[i].a2}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a3')}>
+              <Text>{this.state.tests[i].a3}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a4')}>
+              <Text>{this.state.tests[i].a4}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )
@@ -82,10 +124,13 @@ export default class Test extends Component<Props> {
         <ScrollView>
           {rows}
         </ScrollView>
+        <View><Text>{this.state.answersPressed}</Text></View>
         <View>
           <Text style={styles.welcome}>TEST</Text>
         </View>
-        <Button title='Save test results' onPress={this.saveTestResults} />
+        <TouchableOpacity style={styles.button} onPress={this.checkResults}>
+          <Text>Save test results</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -111,5 +156,10 @@ const styles = StyleSheet.create({
     fontFamily: 'RobotoCondensed-Regular',
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10
   }
 });
