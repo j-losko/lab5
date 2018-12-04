@@ -15,10 +15,42 @@ import FirstScreen from './screens/FirstScreen.js';
 type Props = {};
 export default class App extends Component<Props> {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      internetConnection: true,
+      tests: []
+    };
+	
+	/*
+	try {
+      let response = await fetch('https://pwsz-quiz-api.herokuapp.com/api/tests');
+      let responseJson = await response.json();
+      this.setState({ tests: responseJson });
+    } catch (error) {
+	  this.setState({internetConnection: false});
+      alert('Błąd podczas pobierania danych.\nSprawdź połączenie z internetem!');
+    }*/
+	
+    /*fetch('https://pwsz-quiz-api.herokuapp.com/api/tests')
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        this.setState({ tests: myJson });
+        //this.setState({tests: myJson});
+        //alert(JSON.stringify(myJson));
+        alert(myJson);
+      })
+      .catch((error) => {
+        this.setState({internetConnection: false});
+      });*/
+  }
+  
+
   //TODO:
   //Button -> TouchableOpacity
   //Lepszy wygląd?
-  //Jedna ikona xd
 
   goToScreen = (screenName) => {
     Navigation.push(this.props.componentId, {
@@ -36,6 +68,11 @@ export default class App extends Component<Props> {
   }
 
   render() {
+    if( false ) { // !this.state.internetConnection ) {
+      return(
+        <View><Text>Masz mieć internet by została pobrana baza, która jeszcze w tym dniu nie była ściągnięta</Text></View>
+      );
+    } else {
     return (
       <View style={styles.container}>
       <StatusBar
@@ -68,6 +105,7 @@ export default class App extends Component<Props> {
         </View>
       </View>
     );
+    }
   }
 }
 
