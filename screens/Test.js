@@ -9,25 +9,31 @@ type Props = {};
 export default class Test extends Component<Props> {
   constructor(props) {
     super(props);
-	getDB();
+    getDB();
     this.state = {
       answersPressed: [ /* 'a1','a1','a3','a2',... */ ],
-      tests: []
+      id: '',
+      name: '',
+      description: '',
+      tasks: [],
+      tags: []
     };
-	
-	this.getAllTests(DB);
+    this.getAlltestData(DB);
   }
 
-  getAllTests = (DB) => {
-	DB.transaction((tx) => {
-      tx.executeSql('SELECT * FROM tests;', [], (tx, results) => {
-		var tests = [];
-		for(let i = 0; i < results.rows.length; i++) {
-		  tests[i] = results.rows.item(i);
-		}
-		this.setState({ tests: tests });
+  getAlltestData = (DB) => {
+    DB.transaction((tx) => {
+      tx.executeSql('SELECT * FROM test WHERE id = ?;', [this.props.testId], (tx, results) => {
+        let t = results.rows.item(0);
+        this.setState({
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          tasks: JSON.parse(t.tasks),
+          tags: JSON.parse(t.tags)
+        });
       });
-	});
+    });
   }
 
   testResult = {
@@ -38,38 +44,8 @@ export default class Test extends Component<Props> {
       date: Date()
     }
 
-  /*tests = [
-    {
-      id: 1,
-      q: 'Naciśnij A',
-      a1: 'B',
-      a2: 'C',
-      a3: 'A',
-      a4: 'D',
-      good_answer: 'a3'
-    },
-    {
-      id: 2,
-      q: '2 + 2 = ?',
-      a1: '2',
-      a2: '22',
-      a3: '4',
-      a4: '44',
-      good_answer: 'a3'
-    },
-    {
-      id: 3,
-      q: 'Czy słońce świeci?',
-      a1: 'Tak!',
-      a2: 'Nie',
-      a3: 'Nie wiem',
-      a4: 'Chyba',
-      good_answer: 'a1'
-    }
-  ]*/
-  
   checkResults = () => {
-    if(this.state.answersPressed.length != this.state.tests.length) {
+    if(this.state.answersPressed.length != this.state.tasks.length) {
         alert('Odpowiedz na wszystkie pytania!');
         return;
     }
@@ -82,12 +58,12 @@ export default class Test extends Component<Props> {
     }
     
     let goodAnswers = 0
-    for(let i = 0; i < this.state.tests.length; i++) {
-      if( this.state.answersPressed[i] === this.state.tests[i].good_answer ) {
+    for(let i = 0; i < this.state.tasks.length; i++) {
+      if( this.state.answersPressed[i] === this.state.tasks[i].good_answer ) {
         goodAnswers += 1;
       }
     }
-    alert(goodAnswers + '/' + this.state.tests.length);
+    alert(goodAnswers + '/' + this.state.tasks.length);
   }
 
   saveTestResults = async () => {
@@ -110,43 +86,39 @@ export default class Test extends Component<Props> {
   }
 
   render() {
-    rows = []
+    let rows = []
 
-    for(let i = 0; i < this.state.tests.length; i++) {
+    for(let i = 0; i < this.state.tasks.length; i++) {
+
+      let answers = []
+      for(let j = 0; j < this.state.tasks[i].answers.length; j++) {
+        answers.push(
+          <TouchableOpacity key={i} style={styles.button} onPress={() => this.buttonPress(i, this.state.tasks[i].answers[j].isCorrect)}>
+            <Text>{this.state.tasks[i].answers[j].content}</Text>
+          </TouchableOpacity>
+        );
+      }
+
       rows.push(
-        <View style={styles.testView}>
-          <View style={styles.testHeader}>
-            <Text>Test {i+1}:</Text>
-            <Text>{this.state.tests[i].q}</Text>
+        <View key={i} style={styles.testView}>
+          <View key={i} style={styles.testHeader}>
+            <Text>Pytanie {i+1}:</Text>
+            <Text>{this.state.tasks[i].question}</Text>
           </View>
-          <View style={styles.testBody}>
-            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a1')}>
-              <Text>{this.state.tests[i].a1}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a2')}>
-              <Text>{this.state.tests[i].a2}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a3')}>
-              <Text>{this.state.tests[i].a3}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => this.buttonPress(i, 'a4')}>
-              <Text>{this.state.tests[i].a4}</Text>
-            </TouchableOpacity>
+          <View key={i} style={styles.testBody}>
+            {answers}
           </View>
         </View>
-      )
+      );
     }
 
     return (
       <View style={styles.container}>
-        <View><Text>Rozwiąż te testy:</Text></View>
+        <View><Text>{this.state.name}</Text></View>
         <ScrollView>
           {rows}
         </ScrollView>
-        <View><Text>{this.state.answersPressed}</Text></View>
-        <View>
-          <Text style={styles.welcome}>TEST</Text>
-        </View>
+        <View><Text>{JSON.stringify(this.state.answersPressed)}</Text></View>
         <TouchableOpacity style={styles.button} onPress={this.checkResults}>
           <Text>Save test results</Text>
         </TouchableOpacity>
@@ -163,22 +135,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   testView: {
-    backgroundColor: '#ABC',
-    padding: 20,
+    backgroundColor: '#99c4a6',
+    padding: 10,
     margin: 10,
   },
   testHeader: {
-    backgroundColor: '#CBA',
+    backgroundColor: '#ABC',
     fontFamily: 'OpenSans-Regular',
+    alignItems: 'center',
   },
   testBody: {
     fontFamily: 'RobotoCondensed-Regular',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'column',
   },
   button: {
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
-    padding: 10
+    padding: 10,
+    margin: 5,
   }
 });

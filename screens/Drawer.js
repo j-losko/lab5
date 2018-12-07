@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Navigation} from 'react-native-navigation';
-import {Button} from 'react-native';
 
 type Props = {};
 export default class Drawer extends Component<Props> {
 
-  goToScreen = (screenName) => {
+  goToScreen = (screenName, screenTitle) => {
     Navigation.mergeOptions('drawerID', {
       sideMenu: {
         left: {
@@ -16,7 +15,14 @@ export default class Drawer extends Component<Props> {
     })
     Navigation.push('MAIN_STACK', {
       component: {
-        name: screenName
+        name: screenName,
+        options: {
+          topBar: {
+            title: {
+              text: screenTitle
+            }
+          }
+        }
       }
     })
   }
@@ -24,8 +30,12 @@ export default class Drawer extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Button title='Home Page' onPress={() => this.goToScreen('Welcome')} />
-		<Button title='Results' onPress={() => this.goToScreen('Results')} />
+        <TouchableOpacity onPress={() => this.goToScreen('Welcome', 'Home Page')}>
+          <Text>Home Page</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.goToScreen('Results', 'Results')}>
+          <Text>Results</Text>
+        </TouchableOpacity>
       </View>
     );
   }

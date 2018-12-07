@@ -1,19 +1,22 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, ListView, RefreshControl} from 'react-native';
 
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
 type Props = {};
 export default class Results extends Component<Props> {
 
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    
     this.state = {
       refreshing: false,
-      dataSource: ds.cloneWithRows([{nick: '', score: 0, total: 0, type: '', date: ''}])
+      dataSource: ds.cloneWithRows([{nick: '', score: '', total: '', type: '', date: ''}])
     };
-    this.fetchData().then(() => {
-      this.setState({refreshing: false});
-    });
+  }
+  
+  componentWillMount() {
+    this.fetchData();
   }
 
   _onRefresh = () => {
@@ -22,21 +25,11 @@ export default class Results extends Component<Props> {
       this.setState({refreshing: false});
     });
   }
-
-  /*fetchData = async() => {
-    try {
-      var results = await AsyncStorage.getItem('results');
-      results = JSON.parse(results);
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-      this.setState({ dataSource: ds.cloneWithRows(results) });
-    } catch (error) {}
-  }*/
   
   fetchData = async() => {
     try {
       let response = await fetch('https://pwsz-quiz-api.herokuapp.com/api/results');
       let responseJson = await response.json();
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.setState({ dataSource: ds.cloneWithRows(responseJson) });
     } catch (error) {
       alert('Błąd podczas pobierania danych.\nSprawdź połączenie z internetem!');

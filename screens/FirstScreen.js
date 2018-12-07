@@ -10,7 +10,7 @@ export default class FirstScreen extends Component {
     };
   }
  
-  componentDidMount = async () => {
+  componentWillMount = async () => {
     try {
       const value = await AsyncStorage.getItem('termsOfUseAccepted');
       if (value == null) {
@@ -33,7 +33,7 @@ export default class FirstScreen extends Component {
           style={styles.container}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            alert("Modal has been closed.");
+            alert("Zatwierdź regulamin!");
           }}
         >
           <View style={styles.container}>
