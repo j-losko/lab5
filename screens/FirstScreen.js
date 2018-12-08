@@ -58,53 +58,53 @@ export default class FirstScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  container:{
-    backgroundColor:'#FAFAFA',
-    flex:1,
-    marginTop:70,
-    marginBottom:40,
-    marginLeft:20,
-    marginRight:20,
-    borderRadius:20,
-    borderWidth:4,
-    borderColor:'black'
+  container: {
+    backgroundColor: '#FAFAFA',
+    flex: 1,
+    marginTop: 70,
+    marginBottom: 40,
+    marginLeft: 20,
+    marginRight: 20,
+    borderRadius: 20,
+    borderWidth: 4,
+    borderColor: 'black'
   },
-  title:{
-    fontWeight:'bold',
-    fontSize:20,
-    textAlign:'center',
-    margin:10,
+  title: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
   },
-  description:{
-    fontSize:15,
-    marginRight:20,
-    marginLeft:20
+  description: {
+    fontSize: 15,
+    marginRight: 20,
+    marginLeft: 20
   },
-  titleContainer:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center'
+  titleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  descriptionContainer:{
-    flex:6.5
+  descriptionContainer: {
+    flex: 6.5
   },
-  exitContainer:{
-    flex:2,
-    justifyContent:'flex-start',
-    alignItems:'center',
+  exitContainer: {
+    flex: 2,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
-  exitButtonContainer:{
-    width:200,
-    height:40,
-    backgroundColor:'red',
-    borderRadius:10,
-    justifyContent:'center',
+  exitButtonContainer: {
+    width: 200,
+    height: 40,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    justifyContent: 'center',
   },
-  exitButtonText:{
-    color:'white',
-    fontSize:20,
-    fontWeight:'bold',
-    textAlign:'center'
+  exitButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center'
   }
 });

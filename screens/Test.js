@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 
 import SQLite from 'react-native-sqlite-storage';
 let DB;
@@ -11,12 +11,18 @@ export default class Test extends Component<Props> {
     super(props);
     getDB();
     this.state = {
-      answersPressed: [ /* 'a1','a1','a3','a2',... */ ],
+      refreshing: false,
       id: '',
       name: '',
       description: '',
-      tasks: [],
-      tags: []
+      tasks: [{
+        question: '',
+        answers: []
+      }],
+      tags: [],
+      currentQuestion: 0,
+      score: 0,
+      nick: 'nick'
     };
     this.getAlltestData(DB);
   }
@@ -36,94 +42,86 @@ export default class Test extends Component<Props> {
     });
   }
 
-  testResult = {
-      nick: 'John Async',
-      score: 20,
-      total: 20,
-      type: 'przyszłość',
-      date: Date()
-    }
-
-  checkResults = () => {
-    if(this.state.answersPressed.length != this.state.tasks.length) {
-        alert('Odpowiedz na wszystkie pytania!');
-        return;
-    }
-
-    for(let i = 0; i < this.state.answersPressed.length; i++) {
-      if(this.state.answersPressed[i] === undefined) {
-        alert('Odpowiedz na wszystkie pytania!');
-        return;
-      }
-    }
-    
-    let goodAnswers = 0
-    for(let i = 0; i < this.state.tasks.length; i++) {
-      if( this.state.answersPressed[i] === this.state.tasks[i].good_answer ) {
-        goodAnswers += 1;
-      }
-    }
-    alert(goodAnswers + '/' + this.state.tasks.length);
-  }
-
-  saveTestResults = async () => {
-    try {
-      var results = await AsyncStorage.getItem('results');
-      if( results == null ) {
-        results = [];
-      } else {
-        results = JSON.parse(results);
-      }
-      results.push(this.testResult);
-      await AsyncStorage.setItem('results', JSON.stringify(results));
-    } catch (error) {}
+  saveTestResults = () => {
+    fetch('https://pwsz-quiz-api.herokuapp.com/api/result', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nick: this.state.nick,
+        score: this.state.score,
+        total: this.state.tasks.length,
+        type: this.state.tags[0],
+        date: new Date().toISOString().split('T')[0]
+      }),
+    });
   }
   
-  buttonPress = (id, answer) => {
-    var tempAnswers = this.state.answersPressed;
-    tempAnswers[id] = answer;
-    this.setState({ answersPressed: tempAnswers });
+  buttonPress = (correctAnswer) => {
+    if( correctAnswer ) {
+      this.setState({score: this.state.score + 1});
+    }
+    this._onRefresh();
   }
+  
+  _onRefresh = () => {
+    this.setState({
+      refreshing: true,
+      currentQuestion: this.state.currentQuestion + 1
+    });
+    this.setState({refreshing: false});
+  };
 
   render() {
-    let rows = []
+    if( this.state.currentQuestion === this.state.tasks.length ) {
+      return(
+        <View style={styles.container}>
+          <Text style={styles.text}>Twój wynik to:</Text>
+          <Text style={styles.text}>{this.state.score} / {this.state.tasks.length}</Text>
 
-    for(let i = 0; i < this.state.tasks.length; i++) {
-
+          <Text style={styles.text}>Wprowadź swój nick:</Text>
+          <TextInput
+           style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+           onChangeText={(nick) => this.setState({nick})}
+           value={this.state.nick}
+          />
+          
+          <TouchableOpacity style={styles.button} onPress={() => this.saveTestResults()}>
+            <Text>Wysyłanko!</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    } else {
       let answers = []
-      for(let j = 0; j < this.state.tasks[i].answers.length; j++) {
+      for(let j = 0; j < this.state.tasks[this.state.currentQuestion].answers.length; j++) {
         answers.push(
-          <TouchableOpacity key={i} style={styles.button} onPress={() => this.buttonPress(i, this.state.tasks[i].answers[j].isCorrect)}>
-            <Text>{this.state.tasks[i].answers[j].content}</Text>
+          <TouchableOpacity key={j} style={styles.button} onPress={() => this.buttonPress(this.state.tasks[this.state.currentQuestion].answers[j].isCorrect)}>
+            <Text style={styles.text}>{this.state.tasks[this.state.currentQuestion].answers[j].content}</Text>
           </TouchableOpacity>
         );
       }
 
-      rows.push(
-        <View key={i} style={styles.testView}>
-          <View key={i} style={styles.testHeader}>
-            <Text>Pytanie {i+1}:</Text>
-            <Text>{this.state.tasks[i].question}</Text>
+      return (
+        <View style={styles.container}>
+          <View>
+            <Text style={styles.textHeader}>{this.state.name}</Text>
           </View>
-          <View key={i} style={styles.testBody}>
-            {answers}
-          </View>
+          <ScrollView>
+            <View style={styles.testView}>
+              <View style={styles.testHeader}>
+                <Text style={styles.text2}>Pytanie {this.state.currentQuestion+1} / {this.state.tasks.length}:</Text>
+                <Text style={styles.text2}>{this.state.tasks[this.state.currentQuestion].question}</Text>
+              </View>
+              <View>
+                {answers}
+              </View>
+            </View>
+          </ScrollView>
         </View>
       );
     }
-
-    return (
-      <View style={styles.container}>
-        <View><Text>{this.state.name}</Text></View>
-        <ScrollView>
-          {rows}
-        </ScrollView>
-        <View><Text>{JSON.stringify(this.state.answersPressed)}</Text></View>
-        <TouchableOpacity style={styles.button} onPress={this.checkResults}>
-          <Text>Save test results</Text>
-        </TouchableOpacity>
-      </View>
-    );
   }
 }
 
@@ -132,26 +130,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#d2e0f4',
   },
   testView: {
-    backgroundColor: '#99c4a6',
     padding: 10,
     margin: 10,
   },
   testHeader: {
     backgroundColor: '#ABC',
-    fontFamily: 'OpenSans-Regular',
     alignItems: 'center',
-  },
-  testBody: {
-    fontFamily: 'RobotoCondensed-Regular',
-    flexDirection: 'column',
+    padding: 20,
+    borderRadius: 30,
   },
   button: {
     alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
+    backgroundColor: '#f4f4e1',
+    padding: 20,
     margin: 5,
+    borderRadius: 50,
+  },
+  text: {
+    textAlign: 'center',
+    fontFamily: 'RobotoCondensed-Regular',
+  },
+  text2: {
+    textAlign: 'center',
+    fontFamily: 'OpenSans-Regular',
+  },
+  textHeader: {
+    fontSize: 20,
+    textAlign: 'center',
   }
 });

@@ -26,7 +26,7 @@ export default class App extends Component<Props> {
     getDB();
     this.state = {
       internetConnection: true,
-      tests: [],
+      tests: []
     };
   }
   
@@ -129,7 +129,7 @@ export default class App extends Component<Props> {
     if( !this.state.internetConnection ) {
       return(
         <View style={styles.container}>
-          <Text>Masz mieć internet by została pobrana baza, która jeszcze w tym dniu nie była ściągnięta</Text>
+          <Text style={styles.text}>Musisz włączyć internet, by ściągnąć bazę danych!</Text>
         </View>
       );
     } else {
@@ -139,7 +139,7 @@ export default class App extends Component<Props> {
         rows.push(
           <View key={i} style={styles.view}>
             <TouchableOpacity key={i} onPress={() => this.goToScreen('Test', this.state.tests[i].id)}>
-              <Text>{this.state.tests[i].name}</Text>
+              <Text style={styles.text}>{this.state.tests[i].name}</Text>
             </TouchableOpacity>
           </View>
         )
@@ -159,7 +159,7 @@ export default class App extends Component<Props> {
           </View>
           <View style={styles.footer}>
             <TouchableOpacity onPress={() => this.goToScreen('Results')}>
-              <Text>Ekran wyników</Text>
+              <Text style={styles.text}>Ekran wyników</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     backgroundColor: '#44A8DD',
     padding: 10,
@@ -190,13 +190,15 @@ const styles = StyleSheet.create({
     borderRadius:10,
   },
   view: {
-    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 30,
+    alignItems: 'stretch',
     margin: 2,
     borderColor: '#2A4944',
     borderWidth: 1,
     backgroundColor: '#F2F7F1',
+  },
+  text: {
+    textAlign: 'center',
+    padding: 30,
   }
 });
