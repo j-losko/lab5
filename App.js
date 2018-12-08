@@ -18,9 +18,6 @@ const getDB = () => DB ? DB : DB = SQLite.openDatabase({ name: 'sqlitedb.db', cr
 type Props = {};
 export default class App extends Component<Props> {
 
-//TODO:
-//Użyj fontów
-
   constructor(props) {
     super(props);
     getDB();
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: '#2A4944',
     borderWidth: 1,
-    borderRadius:10,
+    borderRadius: 20,
   },
   view: {
     justifyContent: 'center',
@@ -196,6 +193,7 @@ const styles = StyleSheet.create({
     borderColor: '#2A4944',
     borderWidth: 1,
     backgroundColor: '#F2F7F1',
+    borderRadius: 20,
   },
   text: {
     textAlign: 'center',

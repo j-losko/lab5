@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {AsyncStorage, ScrollView, Platform, StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
+import {Navigation} from 'react-native-navigation';
 
 import SQLite from 'react-native-sqlite-storage';
 let DB;
@@ -56,6 +57,12 @@ export default class Test extends Component<Props> {
         type: this.state.tags[0],
         date: new Date().toISOString().split('T')[0]
       }),
+    })
+    .then(() => {
+      Navigation.pop('MAIN_STACK');
+    })
+    .catch((error) => {
+      alert('Błąd podczas wysyłania wyniku.\nSprawdź połączenie z internetem!');
     });
   }
   
